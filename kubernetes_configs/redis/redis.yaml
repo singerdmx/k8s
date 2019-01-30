@@ -83,7 +83,7 @@ metadata:
 spec:
   # this replicas value is default
   # modify it according to your case
-  replicas: 2
+  replicas: 1 
   # selector can be applied automatically
   # from the labels in the pod template if not set
   # selector:
