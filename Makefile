@@ -26,10 +26,10 @@ create-bucket:
 .PHONY: template
 template:
 	# Minikube templates
-	jinja2 kubernetes_configs/guestbook/guestbook.yaml.jinja minikube_jinja.json --format=json > kubernetes_configs/guestbook/guestbook_minikube.yaml
+	#jinja2 kubernetes_configs/guestbook/guestbook.yaml.jinja minikube_jinja.json --format=json > kubernetes_configs/guestbook/guestbook_minikube.yaml
 	jinja2 kubernetes_configs/postgres/postgres.yaml.jinja minikube_jinja.json --format=json > kubernetes_configs/postgres/postgres_minikube.yaml
 	# GKE templates
-	jinja2 kubernetes_configs/guestbook/guestbook.yaml.jinja gke_jinja.json --format=json > kubernetes_configs/guestbook/guestbook_gke.yaml
+	#jinja2 kubernetes_configs/guestbook/guestbook.yaml.jinja gke_jinja.json --format=json > kubernetes_configs/guestbook/guestbook_gke.yaml
 	jinja2 kubernetes_configs/postgres/postgres.yaml.jinja gke_jinja.json --format=json > kubernetes_configs/postgres/postgres_gke.yaml
 
 .PHONY: deploy
