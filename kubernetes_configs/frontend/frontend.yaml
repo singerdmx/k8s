@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    name: frontend
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        name: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/utopian-pact-123818/frontend:v9
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+          name: postgres-config
+        volumeMounts:
+        - name: reload
+          mountPath: /app
+      volumes:
+      - name: reload
+        hostPath:
+          path: /Users/waprin/code/django_postgres_redis/frontend
+
+---
+
+# The polls service provides a load-balancing proxy over the polls app
+# pods. By specifying the type as a 'LoadBalancer', Container Engine will
+# create an external HTTP load balancer.
+# For more information about Services see:
+#   https://cloud.google.com/container-engine/docs/services/
+# For more information about external HTTP load balancing see:
+#   https://cloud.google.com/container-engine/docs/load-balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    name: frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    name: frontend
