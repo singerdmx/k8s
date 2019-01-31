@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: xcode1024/frontend:v3 
+        image: xcode1024/frontend:v5 
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 80

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-master
+  name: data 
   labels:
     app: redis
     tier: backend

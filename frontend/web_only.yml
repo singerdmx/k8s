@@ -16,6 +16,10 @@ expose:
   - "443:443" # https
 
 # Use 'links' key to link containers together, aka use Docker --link flag.
+links:
+  - link:
+      name: data
+      alias: data
 
 # any extra arguments for Docker?
 # docker_args:
@@ -59,10 +63,9 @@ env:
   DISCOURSE_DB_SOCKET: ''
   DISCOURSE_DB_USERNAME: postgres 
   DISCOURSE_DB_PASSWORD: postgres 
-  DISCOURSE_DB_HOST: postgres 
-  DISCOURSE_DB_PORT: 5432
-  DISCOURSE_REDIS_HOST: redis-master 
-  DISCOURSE_REDIS_SLAVE_HOST: redis-slave
+  DISCOURSE_DB_HOST: 192.168.99.100 
+  DISCOURSE_DB_PORT: 31652 
+  DISCOURSE_REDIS_HOST: data 
 
   ## The CDN address for this Discourse instance (configured to pull)
   #DISCOURSE_CDN_URL: //discourse-cdn.example.com
