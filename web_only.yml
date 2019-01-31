@@ -61,12 +61,10 @@ env:
 
   ## TODO: configure connectivity to the databases
   DISCOURSE_DB_SOCKET: ''
-  DISCOURSE_DB_USERNAME: postgres 
-  DISCOURSE_DB_PASSWORD: postgres 
-  DISCOURSE_DB_HOST: postgres 
-  DISCOURSE_DB_PORT: 5432
-  DISCOURSE_REDIS_HOST: redis-master 
-  DISCOURSE_REDIS_SLAVE_HOST: redis-slave
+  #DISCOURSE_DB_USERNAME: discourse
+  DISCOURSE_DB_PASSWORD: MjNlZjQzMzEzYmRlZmE4
+  DISCOURSE_DB_HOST: data
+  DISCOURSE_REDIS_HOST: data
 
   ## The CDN address for this Discourse instance (configured to pull)
   #DISCOURSE_CDN_URL: //discourse-cdn.example.com
@@ -100,6 +98,6 @@ run:
   ## If you want to authorized additional users, uncomment and change:
   #- exec: ssh-import-id username
   #- exec: ssh-import-id anotherusername
-  #- exec: rails r "SiteSetting.notification_email='xc0d3@outlook.com'"
+  - exec: rails r "SiteSetting.notification_email='xc0d3@outlook.com'"
   - exec: echo "End of custom commands"
   - exec: awk -F\# '{print $1;}' ~/.ssh/authorized_keys | awk 'BEGIN { print "Authorized SSH keys for this container:"; } NF>=2 {print $NF;}'
