@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: gcr.io/utopian-pact-123818/frontend:v9
+        image: xcode1024/frontend:v1 
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080

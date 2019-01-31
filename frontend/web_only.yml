@@ -16,10 +16,6 @@ expose:
   - "443:443" # https
 
 # Use 'links' key to link containers together, aka use Docker --link flag.
-links:
-  - link:
-      name: data
-      alias: data
 
 # any extra arguments for Docker?
 # docker_args:
