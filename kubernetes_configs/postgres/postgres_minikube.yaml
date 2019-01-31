@@ -9,6 +9,12 @@ data:
   POSTGRES_DB: discourse
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+  DISCOURSE_DB_USERNAME: postgres 
+  DISCOURSE_DB_PASSWORD: postgres 
+  DISCOURSE_DB_HOST: postgres 
+  DISCOURSE_DB_PORT: 5432
+  DISCOURSE_REDIS_HOST: redis-master 
+  DISCOURSE_REDIS_SLAVE_HOST: redis-slave
 ---
 kind: PersistentVolume
 apiVersion: v1
