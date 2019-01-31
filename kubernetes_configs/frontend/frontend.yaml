@@ -1,3 +1,4 @@
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -16,17 +17,10 @@ spec:
         image: xcode1024/frontend:v1 
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+          - containerPort: 8080
         envFrom:
-        - configMapRef:
-          name: postgres-config
-        volumeMounts:
-        - name: reload
-          mountPath: /app
-      volumes:
-      - name: reload
-        hostPath:
-          path: /Users/waprin/code/django_postgres_redis/frontend
+          - configMapRef:
+              name: postgres-config
 
 ---
 
