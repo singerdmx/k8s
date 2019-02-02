@@ -21,7 +21,7 @@ spec:
         envFrom:
           - configMapRef:
               name: postgres-config
-
+        command: ["/sbin/boot"]
 ---
 
 # The polls service provides a load-balancing proxy over the polls app
