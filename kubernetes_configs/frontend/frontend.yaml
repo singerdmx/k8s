@@ -17,11 +17,15 @@ spec:
         image: xcode1024/frontend:v5 
         imagePullPolicy: IfNotPresent
         ports:
-          - containerPort: 80
+          - containerPort: 3000
         envFrom:
           - configMapRef:
               name: postgres-config
         command: ["/sbin/boot"]
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "1000m"
 ---
 
 # The polls service provides a load-balancing proxy over the polls app

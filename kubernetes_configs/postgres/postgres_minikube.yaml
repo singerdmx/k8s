@@ -9,6 +9,7 @@ data:
   POSTGRES_DB: discourse
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+  GET_HOSTS_FROM: data
   DISCOURSE_DB_USERNAME: postgres 
   DISCOURSE_DB_PASSWORD: postgres 
   DISCOURSE_DB_HOST: postgres
