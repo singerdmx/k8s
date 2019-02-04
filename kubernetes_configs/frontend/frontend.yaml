@@ -17,7 +17,7 @@ spec:
         image: xcode1024/frontend:v5 
         imagePullPolicy: IfNotPresent
         ports:
-          - containerPort: 3000
+          - containerPort: 80
         envFrom:
           - configMapRef:
               name: postgres-config
