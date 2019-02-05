@@ -13,8 +13,9 @@ data:
   DISCOURSE_DB_PASSWORD: postgres 
   DISCOURSE_DB_HOST: postgres
   DISCOURSE_DB_PORT: "5432"
-  DISCOURSE_REDIS_HOST: data 
-  DISCOURSE_REDIS_SLAVE_HOST: slave
+  DISCOURSE_REDIS_HOST: "redis-master" 
+  DISCOURSE_REDIS_SLAVE_HOST: "redis-slave"
+  GET_HOSTS_FROM: "data"
   LANG: "en_US.UTF-8"
   RAILS_ENV: "production"
   UNICORN_WORKERS: "2"
