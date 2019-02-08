@@ -41,23 +41,33 @@ var separator = "###"
 var table = pq.QuoteIdentifier("guestbooks")
 
 func ListRangeHandler(rw http.ResponseWriter, req *http.Request) {
-	// key := mux.Vars(req)["key"]
-	// list := simpleredis.NewList(slavePool, key)
-	// members := HandleError(list.GetAll()).([]string)
-	members := getFromDB()
+	key := mux.Vars(req)["key"]
+	list := simpleredis.NewList(slavePool, key)
+	members, err := list.All()
+	if err != nil {
+		// cache miss
+		members = getFromDB()
+		// update cache
+		list := simpleredis.NewList(masterPool, key)
+		list.Clear()
+		for _, member := range members {
+			list.Add(member)
+		}
+	}
+
 	membersJSON := HandleError(json.MarshalIndent(members, "", "  ")).([]byte)
 	rw.Write(membersJSON)
 }
 
 func ListPushHandler(rw http.ResponseWriter, req *http.Request) {
-	// key := mux.Vars(req)["key"]
+	key := mux.Vars(req)["key"]
 	value := mux.Vars(req)["value"]
 	values := getFromDB()
 	values = append(values, value)
 	writeToDB(values)
-	// update cache
-	// list := simpleredis.NewList(masterPool, key)
-	// HandleError(nil, list.Add(value))
+	// invalidate cache
+	list := simpleredis.NewList(masterPool, key)
+	list.Clear()
 	ListRangeHandler(rw, req)
 }
 
@@ -107,16 +117,17 @@ func getFromDB() []string {
 		}
 		return strings.Split(values, separator)
 	}
-	return nil
+	return []string{}
 }
 
 func main() {
-	// masterPool = simpleredis.NewConnectionPoolHost("redis-master:6379")
-	// defer masterPool.Close()
-	// slavePool = simpleredis.NewConnectionPoolHost("redis-slave:6379")
-	// defer slavePool.Close()
-	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
-		"postgres", "postgres", "discourse") // ENV
+	masterPool = simpleredis.NewConnectionPoolHost("redis-master:6379")
+	defer masterPool.Close()
+	slavePool = simpleredis.NewConnectionPoolHost("redis-slave:6379")
+	defer slavePool.Close()
+	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
+		os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB"),
+		os.Getenv("DISCOURSE_DB_HOST"), os.Getenv("DISCOURSE_DB_PORT")) // ENV
 	var err error
 	db, err = sql.Open("postgres", dbinfo)
 	if err != nil {
