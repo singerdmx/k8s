@@ -18,33 +18,47 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
 
+	"database/sql"
+
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
+	"github.com/lib/pq"
+	_ "github.com/lib/pq"
 	"github.com/xyproto/simpleredis"
 )
 
 var (
 	masterPool *simpleredis.ConnectionPool
 	slavePool  *simpleredis.ConnectionPool
+	db         *sql.DB
 )
 
+var separator = "###"
+var table = pq.QuoteIdentifier("guestbooks")
+
 func ListRangeHandler(rw http.ResponseWriter, req *http.Request) {
-	key := mux.Vars(req)["key"]
-	list := simpleredis.NewList(slavePool, key)
-	members := HandleError(list.GetAll()).([]string)
+	// key := mux.Vars(req)["key"]
+	// list := simpleredis.NewList(slavePool, key)
+	// members := HandleError(list.GetAll()).([]string)
+	members := getFromDB()
 	membersJSON := HandleError(json.MarshalIndent(members, "", "  ")).([]byte)
 	rw.Write(membersJSON)
 }
 
 func ListPushHandler(rw http.ResponseWriter, req *http.Request) {
-	key := mux.Vars(req)["key"]
+	// key := mux.Vars(req)["key"]
 	value := mux.Vars(req)["value"]
-	list := simpleredis.NewList(masterPool, key)
-	HandleError(nil, list.Add(value))
+	values := getFromDB()
+	values = append(values, value)
+	writeToDB(values)
+	// update cache
+	// list := simpleredis.NewList(masterPool, key)
+	// HandleError(nil, list.Add(value))
 	ListRangeHandler(rw, req)
 }
 
@@ -73,12 +87,44 @@ func HandleError(result interface{}, err error) (r interface{}) {
 	return result
 }
 
-func main() {
-	masterPool = simpleredis.NewConnectionPoolHost("redis-master:6379")
-	defer masterPool.Close()
-	slavePool = simpleredis.NewConnectionPoolHost("redis-slave:6379")
-	defer slavePool.Close()
+func writeToDB(arr []string) {
+	data := strings.Join(arr, separator)
+	_, err := db.Exec(fmt.Sprintf("INSERT INTO %s (values) VALUES ($1)", table), data)
+	if err != nil {
+		panic("Fail to insert into database: " + err.Error())
+	}
+}
 
+func getFromDB() []string {
+	rows, err := db.Query("SELECT VALUES FROM guestbooks ORDER BY ID DESC LIMIT 1")
+	if err != nil {
+		panic("Fail to read database: " + err.Error())
+	}
+	for rows.Next() {
+		var values string
+		err = rows.Scan(&values)
+		if err != nil {
+			panic("Fail to read values: " + err.Error())
+		}
+		return strings.Split(values, separator)
+	}
+	return nil
+}
+
+func main() {
+	// masterPool = simpleredis.NewConnectionPoolHost("redis-master:6379")
+	// defer masterPool.Close()
+	// slavePool = simpleredis.NewConnectionPoolHost("redis-slave:6379")
+	// defer slavePool.Close()
+	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
+		"postgres", "postgres", "discourse") // ENV
+	var err error
+	db, err = sql.Open("postgres", dbinfo)
+	if err != nil {
+		panic("Fail to connect to database: " + err.Error())
+	}
+
+	fmt.Println(db)
 	r := mux.NewRouter()
 	r.Path("/lrange/{key}").Methods("GET").HandlerFunc(ListRangeHandler)
 	r.Path("/rpush/{key}/{value}").Methods("GET").HandlerFunc(ListPushHandler)
