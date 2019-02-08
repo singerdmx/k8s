@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -56,6 +57,7 @@ func ListRangeHandler(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	log.Printf("ListRangeHandler: members %v\n", members)
 	membersJSON := HandleError(json.MarshalIndent(members, "", "  ")).([]byte)
 	rw.Write(membersJSON)
 }
@@ -136,7 +138,7 @@ func main() {
 		panic("Fail to connect to database: " + err.Error())
 	}
 
-	fmt.Println(db)
+	log.Println(db)
 	r := mux.NewRouter()
 	r.Path("/lrange/{key}").Methods("GET").HandlerFunc(ListRangeHandler)
 	r.Path("/rpush/{key}/{value}").Methods("GET").HandlerFunc(ListPushHandler)
