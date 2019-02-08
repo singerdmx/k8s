@@ -18,6 +18,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -91,6 +92,7 @@ func EnvHandler(rw http.ResponseWriter, req *http.Request) {
 
 func HandleError(result interface{}, err error) (r interface{}) {
 	if err != nil {
+		err = errors.New(fmt.Sprintf("%v with error: ", result) + err.Error())
 		panic(err)
 	}
 	return result
