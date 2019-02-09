@@ -140,8 +140,8 @@ func main() {
 	if err != nil {
 		panic("Fail to connect to database: " + err.Error())
 	}
+	defer db.Close()
 
-	log.Println(db)
 	r := mux.NewRouter()
 	r.Path("/lrange/{key}").Methods("GET").HandlerFunc(ListRangeHandler)
 	r.Path("/rpush/{key}/{value}").Methods("GET").HandlerFunc(ListPushHandler)
