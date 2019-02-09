@@ -1,0 +1,5 @@
+CREATE TABLE guestbooks (    
+  id INT GENERATED ALWAYS AS IDENTITY,  
+  values VARCHAR NOT NULL
+);
+
