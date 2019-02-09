@@ -45,15 +45,17 @@ var table = pq.QuoteIdentifier("guestbooks")
 func ListRangeHandler(rw http.ResponseWriter, req *http.Request) {
 	key := mux.Vars(req)["key"]
 	list := simpleredis.NewList(slavePool, key)
-	members, err := list.All()
-	if err != nil {
+	members, _ := list.All()
+	if len(members) == 0 {
 		// cache miss
 		members = getFromDB()
-		// update cache
-		list := simpleredis.NewList(masterPool, key)
-		list.Clear()
-		for _, member := range members {
-			list.Add(member)
+		if len(members) > 0 {
+			// update cache
+			list := simpleredis.NewList(masterPool, key)
+			list.Clear()
+			for _, member := range members {
+				list.Add(member)
+			}
 		}
 	}
 
