@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: xcode1024/guestbook:v1 
+        image: xcode1024/guestbook:v2 
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 3000 
